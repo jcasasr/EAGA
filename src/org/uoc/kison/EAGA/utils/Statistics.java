@@ -1,11 +1,13 @@
 package org.uoc.kison.EAGA.utils;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 
-public class Log {
+public class Statistics {
 	// Singleton var
-	private static Log INSTANCE = null;
-	private final static Logger logger =  Logger.getLogger(Log.class);
+	private static Statistics INSTANCE = null;
+	private final static Logger logger =  Logger.getLogger(Statistics.class);
 	private Utils utils;
 		
 	private long time_AnonymizeDegreeSequence;
@@ -18,11 +20,11 @@ public class Log {
 	/** Begin Singleton pattern */
     private synchronized static void createInstance() {
         if (INSTANCE == null) { 
-            INSTANCE = new Log();
+            INSTANCE = new Statistics();
         }
     }
  
-    public static Log getInstance() {
+    public static Statistics getInstance() {
         createInstance();
         return INSTANCE;
     }
@@ -31,7 +33,7 @@ public class Log {
         throw new CloneNotSupportedException(); 
     }
 	
-	private Log(){
+	private Statistics(){
 		utils = new Utils();
 	}
 	/** End singleton pattern */
@@ -96,4 +98,54 @@ public class Log {
 	    logger.info("Maximum number of iterations with solution: "+ params.getSOLUTION_MAX_ITER_NO_CHANGE());
 	    logger.info("Maximum number of iterations with no solution: "+ params.getNO_SOLUTION_MAX_ITER_NO_CHANGE());
 	}
+	
+	public void showTimeAnonymizeDegreeSequence() {
+	    // time
+	    printTimeFuncion(time_AnonymizeDegreeSequence, calls_AnonymizeDegreeSequence, "AnonymizeDegreeSequence", 1);
+	    printTimeFuncion(time_mutar, calls_mutar, "mutatePopulation", 2);
+	    printTimeFuncion(time_score, calls_score, "evaluatePopulation", 2);  
+	}
+	
+	
+	private void printTimeFuncion(long fTime, int calls, String functionName, int level) {		
+	    
+	    String sTime = getDurationBreakdown(fTime);
+	    
+	    String sCadena = "";
+	    for (int i=0;i<level;i++){
+	        if (i < level){
+	            sCadena += " ";
+	        }else{
+	            sCadena +="+";  
+	        }      
+	    }
+	    
+	    logger.info(String.format("%s- %s: (%d calls) - %s",sCadena, functionName, calls, sTime));
+	}
+	
+	private String getDurationBreakdown(long millis){
+        if(millis < 0){
+            throw new IllegalArgumentException("Duration must be greater than zero!");
+        }
+
+        long days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+        StringBuilder sb = new StringBuilder(64);
+        sb.append(days);
+        sb.append(" Days ");
+        sb.append(hours);
+        sb.append(" Hours ");
+        sb.append(minutes);
+        sb.append(" Minutes ");
+        sb.append(seconds);
+        sb.append(" Seconds");
+
+        return(sb.toString());
+    }
 }

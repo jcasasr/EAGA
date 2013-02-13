@@ -3,7 +3,7 @@ package org.uoc.kison.EAGA.genetic;
 import java.util.ArrayList;
 
 import org.uoc.kison.EAGA.objects.Individual;
-import org.uoc.kison.EAGA.utils.Log;
+import org.uoc.kison.EAGA.utils.Statistics;
 import org.uoc.kison.EAGA.utils.Params;
 import org.uoc.kison.EAGA.utils.Utils;
 
@@ -15,10 +15,12 @@ import org.uoc.kison.EAGA.utils.Utils;
 public class Score {
 	private Utils utils;
 	private Params params;
+	private Statistics stats;
 	
 	public Score(){
 		utils = new Utils();
 		params = Params.getInstance();
+		stats = Statistics.getInstance();
 	}
 
 	//evaluate entire population
@@ -33,8 +35,8 @@ public class Score {
 	    }
 	    
 	    // timer
-	    Log.getInstance().incrementTime_score(System.currentTimeMillis() - time_ini);
-	    Log.getInstance().incrementCalls_score(1);
+	    stats.incrementTime_score(System.currentTimeMillis() - time_ini);
+	    stats.incrementCalls_score(1);
 	    
 	    return population;
 	}

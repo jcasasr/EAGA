@@ -18,11 +18,15 @@ public class TerminationCondition {
 		 params = Params.getInstance();
 	}
 	
+	public int getNumIterNoChange(){
+		return numIterNoChange;
+	}
+	
 	public void addIteration(Individual bestCandidate) {
 	    iterationHistory.add(bestCandidate.getScore());
 	}
 	
-	private int getNumberOfIterations() {
+	public int getNumberOfIterations() {
 	    return(iterationHistory.size());
 	}
 	

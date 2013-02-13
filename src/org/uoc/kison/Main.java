@@ -3,9 +3,15 @@
  */
 package org.uoc.kison;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.uoc.kison.EAGA.utils.Utils;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.uoc.kison.EAGA.EAGA;
+import org.uoc.kison.EAGA.utils.ImportGML;
+import org.uoc.kison.EAGA.utils.Params;
 
 public class Main {
 	
@@ -14,15 +20,21 @@ public class Main {
 	public static void main(String[] args) {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		//ImportGML gml = new ImportGML();
-		//UndirectedGraph<String, DefaultEdge> graph = gml.parseGML("/home/adotorc/football.gml");
+		ImportGML gml = new ImportGML();
+		UndirectedGraph<String, DefaultEdge> graph = gml.parseGML("/home/adotorc/football.gml");
 		
-		//Params.getInstance();
+		Params.getInstance();
 		
-		int[] test = {2,3,5,8,9,0,4,1,2};
-		Utils utils = new Utils();
-		int[] degreeHist = utils.getDegreeHistogramFromDegreeSequence(test);
-		System.out.println("K: "+utils.getKAnonymityValue(degreeHist));
+		Set<String> vertex = graph.vertexSet();
+		int[] degrees = new int[vertex.size()];
+		int i=0;
+		for(String v : vertex){
+			degrees[i] = graph.degreeOf(v);
+			i++;
+		}
+		
+		EAGA eaga = new EAGA();
+		eaga.AnonymizeDegreeSequence(degrees, 2);
 		
 	}
 

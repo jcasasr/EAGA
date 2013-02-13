@@ -1,6 +1,6 @@
 package org.uoc.kison.EAGA.objects;
 
-public class Individual {
+public class Individual implements Comparable<Individual>{
 	private int[] d;
 	private int[] h;
 	private int k;
@@ -29,6 +29,12 @@ public class Individual {
 	}
 	public void setScore(double score) {
 		this.score = score;
+	}
+	@Override
+	public int compareTo(Individual object) {
+		if (this.score > object.score) return -1;
+		else if (this.score < object.score) return 1;
+		else return 0;
 	}
 	
 }
