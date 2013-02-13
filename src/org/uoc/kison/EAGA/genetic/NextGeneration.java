@@ -32,8 +32,8 @@ public class NextGeneration {
 	// Steady-State Model for next generation selection
 	private Individual[] getSteadyStateModel(Individual[] population) {
 	    // pre-allocate space
-	    Individual[] nextGeneration = new Individual[params.getPOPULATION_NUM()];
-	    int populationNum = params.getPOPULATION_NUM();
+		int populationNum = params.getPOPULATION_NUM();
+	    Individual[] nextGeneration = new Individual[populationNum];
 	    
 	    // best candidates %
 	    int count = (int) Math.floor(populationNum * (1 - params.getSURVIVOR_STEADYSTATE_RANDOM()));

@@ -113,14 +113,14 @@ public class EAGA {
 	        population = nextGen.getNextGeneration(population);
 	        
 	        // show best individual
-	        logger.info("It: "+terminationCondition.getNumberOfIterations()+"; K="+population[1].getK()+"; Sc="+population[1].getScore()+"; NC:"+ terminationCondition.getNumIterNoChange());
+	        logger.info("It: "+terminationCondition.getNumberOfIterations()+"; K="+population[0].getK()+"; Sc="+population[0].getScore()+"; NC:"+ terminationCondition.getNumIterNoChange());
 	        
 	        // add to iteration process
-	        terminationCondition.addIteration(population[1]);
+	        terminationCondition.addIteration(population[0]);
 	    }
 	    
 	    // select the best candidate
-	    Individual bestCandidate = population[1];
+	    Individual bestCandidate = population[0];
 	    
 	    // timer
 

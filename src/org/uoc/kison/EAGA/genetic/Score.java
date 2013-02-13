@@ -153,7 +153,7 @@ public class Score {
 	// Get a score based on the isolation of 1 node
 	private double getDistanceToNearestNeigborhood(int[] h, int index) {
 	    int distance = -1;
-	    int i = 0;
+	    int i = 1;
 	    int iMin = 0;
 	    int iMax = h.length;
 	    
@@ -163,7 +163,7 @@ public class Score {
 	                distance = i;
 	            }
 	        } 
-	        if(index+i <= iMax) {
+	        if(index+i < iMax) {
 	            if(h[index+i]>0) {
 	                distance = i;
 	            }

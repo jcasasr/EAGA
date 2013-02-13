@@ -37,12 +37,12 @@ public class TerminationCondition {
 	        // compute the number of iterations with the same best candidate
 	        numIterNoChange = -1;
 	        for(int i=0;i<iterationHistory.size();i++){
-	        	if (iterationHistory.get(i) == iterationHistory.get(iterationHistory.size()-1)){
+	        	if (iterationHistory.get(i).doubleValue() == iterationHistory.get(iterationHistory.size()-1).doubleValue()){
 	        		numIterNoChange++;
 	        	}
 	        }
 	        
-	        if (iterationHistory.get(iterationHistory.size()) >= k) {
+	        if (iterationHistory.get(iterationHistory.size()-1) >= k) {
 	            /***************************
 	            * THERE IS A VALID SOLUTION
 	            * define the max iterations without change in the best individual

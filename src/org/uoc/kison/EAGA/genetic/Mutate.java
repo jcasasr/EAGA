@@ -1,6 +1,7 @@
 package org.uoc.kison.EAGA.genetic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.uoc.kison.EAGA.objects.Individual;
@@ -58,8 +59,8 @@ public class Mutate {
 	* -individual: individual
 	* @return: mutated individual
 	*/
-	private Individual mutateIndividual_random(Individual individual) {
-	    int[] d = individual.getD();
+	private Individual mutateIndividual_random(Individual individual) {	    
+		int[] d = Arrays.copyOf(individual.getD(),individual.getD().length);
 	    Random rand = new Random();
 	    
 	    // number of mutations for each individual
@@ -72,9 +73,11 @@ public class Mutate {
 	    int n1; int n2;
 	    for(int i=0;i<num;i++) {
 	        n1 = rand.nextInt(d.length);
-	        d[n1] = d[n1]-1;
-	        n2 = rand.nextInt(d.length);
-	        d[n2] = d[n2]+1;
+	        if (!(d[n1] == 0)){
+	        	d[n1] = d[n1]-1;
+	        	n2 = rand.nextInt(d.length);
+		        d[n2] = d[n2]+1;
+	        }	        
 	    }
 	    
 	    // new candidate
