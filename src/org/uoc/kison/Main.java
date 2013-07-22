@@ -1,50 +1,110 @@
-/**
- * @author adotorc
- */
+/*
+ * Copyright 2013 Jordi Casas-Roma, Alexandre Dotor Casals
+ * 
+ * This file is part of EAGA. 
+ * 
+ * EAGA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * EAGA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with EAGA.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.uoc.kison;
 
-import java.util.Arrays;
-import java.util.Set;
-
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.uoc.kison.EAGA.EAGA;
-import org.uoc.kison.EAGA.utils.ImportGML;
-import org.uoc.kison.EAGA.utils.Params;
+import org.uoc.kison.EAGA.utils.UtilsGraph;
+import org.uoc.kison.exporters.GmlExporter;
+import org.uoc.kison.objects.SimpleIntGraph;
+import org.uoc.kison.parsers.GmlParser;
+import org.uoc.kison.parsers.TxtParser;
 
 public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class);
+    private static final String version = "1.0";
 
     public static void main(String[] args) {
         PropertyConfigurator.configure("log4j.properties");
-        
-        String GMLfile = null;
+
+        String inputFileName = null;
+        String fullPath = null;
+        String baseName = null;
+        String extension = null;
+        String outputFileName = null;
         int k = 1;
+
         if (args.length >= 2) {
-            GMLfile = args[0];
+            inputFileName = args[0];
             k = Integer.parseInt(args[1]);
+
+            fullPath = FilenameUtils.getFullPath(inputFileName);
+            baseName = FilenameUtils.getBaseName(inputFileName);
+            extension = FilenameUtils.getExtension(inputFileName);
+            
+
+            logger.info("**************************************************************");
+            logger.info("* EAGA - Evolutionary Algorithms for Graph Anonymization     *");
+            logger.info("* Jordi Casas-Roma (jcasasr@uoc.edu)                         *");
+            logger.info("* Alexandre Dotor Casals (adotorc@uoc.edu)                   *");
+            logger.info("* Universitat Oberta de Catalunya (www.uoc.edu)              *");
+            logger.info("**************************************************************");
+            logger.info("");
+            logger.info(String.format("Version %s", version));
+            logger.info(String.format("Input filname   : %s", inputFileName));
+            logger.info(String.format("k value         : %d", k));
+            logger.info("");
+            logger.info("---------------------------------------------------------------");
+
         } else {
-            logger.error("Invalid number of arguments!");
-            System.out.println("Usage: java EAGA <path_to_gml_file> <k value>");
+            System.out.println("EAGA Version " + version);
+            System.out.println("Usage: java EAGA <input filename> <k value>");
+            System.exit(-1);
         }
 
-        ImportGML gml = new ImportGML();
-        UndirectedGraph<String, DefaultEdge> graph = gml.parseGML(GMLfile);
-        
-        Params.getInstance();
+        // import GML 
+        SimpleIntGraph graph = null;
 
-        Set<String> vertex = graph.vertexSet();
-        int[] degrees = new int[vertex.size()];
-        int i = 0;
-        for (String v : vertex) {
-            degrees[i] = graph.degreeOf(v);
-            i++;
+        if (extension.compareToIgnoreCase("GML") == 0) {
+            GmlParser gmlParser = new GmlParser();
+            graph = gmlParser.parseFile(inputFileName);
+
+        } else if (extension.compareToIgnoreCase("TXT") == 0) {
+            TxtParser txtParser = new TxtParser();
+            graph = txtParser.parseFile(inputFileName);
+
+        } else {
+            logger.error(String.format("Unknown filetype (extension %s)!", extension));
+            System.exit(0);
         }
 
+        // apply EAGA algorithm
         EAGA eaga = new EAGA();
-        eaga.AnonymizeDegreeSequence(degrees, k);
+        SimpleIntGraph gk = eaga.eaga(graph, k);
+        
+        UtilsGraph utilsGraph = new UtilsGraph();
+        int k_real = utilsGraph.getKAnonymityValueFromGraph(gk);
+        int ei = Math.round(utilsGraph.edgeIntersection(graph, gk) * 100 / graph.getNumEdges());
+        
+        if(k_real < k) {
+            logger.error(String.format("ERROR el valor de k obtingut es mes petit que el desitjat! %s < %s", k_real, k));
+            logger.error(String.format("El fitxer de sortida no s'exportara!"));
+
+        } else {
+            // export result to GML
+            outputFileName = fullPath + baseName + "-k=" + k_real + "-EI="+ ei +"." + extension;
+            logger.info(String.format("Saving anonymized graph to: %s", outputFileName));
+            GmlExporter gmlExporter = new GmlExporter();
+            gmlExporter.exportToFile(gk, outputFileName);
+        }
     }
 }

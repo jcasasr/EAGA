@@ -1,146 +1,74 @@
-/**
- * @author adotorc
- */
+/*
+ * Copyright 2013 Jordi Casas-Roma, Alexandre Dotor Casals
+ * 
+ * This file is part of EAGA. 
+ * 
+ * EAGA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * EAGA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with EAGA.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.uoc.kison.EAGA;
 
-import java.util.Arrays;
-
 import org.apache.log4j.Logger;
-import org.uoc.kison.EAGA.genetic.GeneratePopulation;
-import org.uoc.kison.EAGA.genetic.Mutate;
-import org.uoc.kison.EAGA.genetic.NextGeneration;
-import org.uoc.kison.EAGA.genetic.Score;
-import org.uoc.kison.EAGA.genetic.TerminationCondition;
-import org.uoc.kison.EAGA.objects.Individual;
-import org.uoc.kison.EAGA.utils.Statistics;
-import org.uoc.kison.EAGA.utils.Params;
-import org.uoc.kison.EAGA.utils.Utils;
+import org.uoc.kison.EAGA.utils.ElapsedTime;
+import org.uoc.kison.EAGA.utils.UtilsGraph;
+import org.uoc.kison.objects.SimpleIntGraph;
 
-/*******
- * EAGA *
- ********
- * Evolutionary Algorithm for Graph Anonymization
- */
+/////////////////////////////////////////////////////////
+// Univariant Microaggregation for Graph Anonymization //
+/////////////////////////////////////////////////////////
 public class EAGA {
 
     private static final Logger logger = Logger.getLogger(EAGA.class);
-    private TerminationCondition terminationCondition;
-    private GeneratePopulation generatePopulation;
-    private Utils utils;
-    private Score score;
-    private Statistics stats;
-    private Mutate mutate;
-    private NextGeneration nextGen;
+    UtilsGraph utilsGraph;
 
     public EAGA() {
-        terminationCondition = new TerminationCondition();
-        generatePopulation = new GeneratePopulation();
-        utils = new Utils();
-        score = new Score();
-        stats = Statistics.getInstance();
-        mutate = new Mutate();
-        nextGen = new NextGeneration();
+        utilsGraph = new UtilsGraph();
     }
 
-    /** 
-     * Anonymize degree sequence
-     * -d0: original degree sequence
-     * -k: desired k-value
-     * @return: anonymized sequence
-     */
-    public Individual AnonymizeDegreeSequence(int[] d0, int k) {
-        Individual[] population;
-        // init
-        stats.initTimeCounters();
-        terminationCondition.initIteration();
-        // timer
-        long time_ini = System.currentTimeMillis();
+    /**
+     * EAGA Algorithm
+     */ 
+    public SimpleIntGraph eaga(SimpleIntGraph g, int k) {
 
-        ////////////////////////////
-        // Parameters //
-        ////////////////////////////
-        stats.showParameters(d0, k);
+        ElapsedTime et = new ElapsedTime();
+        
+        logger.info(String.format("Original Graph: %d nodes, %d edges and K=%d.", g.getNumNodes(), g.getNumEdges(), utilsGraph.getKAnonymityValueFromGraph(g)));
+        
+        // degree sequence of G
+        int[] d = utilsGraph.degree(g);
 
-        //////////////////////////////////////////////////
-        // Initialize population //
-        //////////////////////////////////////////////////
-        // crear individuo original
-        Individual original = new Individual();
-        original.setD(d0);
-        original.setH(utils.getDegreeHistogramFromDegreeSequence(original.getD()));
+        /**
+         * Step 1. anonymize the degree sequence
+         */
+        DegreeAnonimization da = new DegreeAnonimization();
+        int[] dk = da.AnonymizeDegreeSequence(d, k);
 
-        // generate population
-        Params params = Params.getInstance();
-        population = generatePopulation.genaratePopulation(original, params.getPOPULATION_GENERATION_TYPE(), params.getPOPULATION_NUM());
+        /**
+         * Step 2. modifiy original graph to anonymize it
+         */ 
+        GraphReconstruction gr = new GraphReconstruction(g, dk);
+        SimpleIntGraph gk = gr.UMGA_recons();
 
-        //////////////////////////////////////////////
-        // Evaluate population //
-        //////////////////////////////////////////////
-        population = score.evaluatePopulation(population, original, k);
+        logger.info("Anonimization process has finished!");
+        logger.info("************************************************");
+        // show results
+        utilsGraph.edgeIntersection(g, gk);
+        logger.info(String.format("Modified graph K=%d", utilsGraph.getKAnonymityValueFromDegreeSequence(utilsGraph.degree(gk))));
 
-        // add to iteration process
-        terminationCondition.addIteration(population[0]);
-
-        // Repeat until...
-        Individual[] children;
-        while (terminationCondition.doIteration(k)) {
-            ////////////////////////////////////////////////////////
-            // 1- Parents recombination //
-            ////////////////////////////////////////////////////////
-
-            // select parents
-
-            // recombine pairs of parents
-
-            ////////////////////////////////////////////////
-            // 2- mutate population //
-            ////////////////////////////////////////////////
-            children = mutate.mutatePopulation(population);
-
-            ////////////////////////////////////////////////////
-            // 3- Evaluate population //
-            ////////////////////////////////////////////////////
-            children = score.evaluatePopulation(children, original, k);
-
-            ////////////////////////////////////////////////////////
-            // 4- Select new candidates //
-            ////////////////////////////////////////////////////////
-            // sort individuals
-            Individual[] sortPopulation = Arrays.copyOf(population, population.length + children.length);
-            System.arraycopy(children, 0, sortPopulation, population.length, children.length);
-            population = nextGen.sortPopulation(sortPopulation);
-
-            // seleccionar la siguiente generacion
-            population = nextGen.getNextGeneration(population);
-
-            // show best individual
-            logger.info("It: " + terminationCondition.getNumberOfIterations() + "; K=" + population[0].getK() + "; Sc=" + population[0].getScore() + "; NC:" + terminationCondition.getNumIterNoChange());
-
-            // add to iteration process
-            terminationCondition.addIteration(population[0]);
-        }
-
-        // select the best candidate
-        Individual bestCandidate = population[0];
-
-        // timer
-
-        stats.incrementTime_AnonymizeDegreeSequence(System.currentTimeMillis() - time_ini);
-        stats.incrementCalls_AnonymizeDegreeSequence(1);
-        stats.showTimeAnonymizeDegreeSequence();
-
-        // log results
-        int sumD = 0;
-        int[] bestCandidateD = bestCandidate.getD();
-        for (int i = 0; i < bestCandidateD.length; i++) {
-            if (d0.length <= i) {
-                sumD += Math.abs(bestCandidateD[i]);
-            } else {
-                sumD += Math.abs(d0[i] - bestCandidateD[i]);
-            }
-        }
-        logger.info(String.format("Best candidate sequence (k=%d, score=%f, diffs=%d) [%s]", bestCandidate.getK(), bestCandidate.getScore(), sumD, Arrays.toString(bestCandidate.getD())));
-
-        return bestCandidate;
+        et.stop();
+        logger.info(String.format("Total running time: %s", et.getElapsedTime()));
+        logger.info("************************************************");
+        
+        return gk;
     }
 }
