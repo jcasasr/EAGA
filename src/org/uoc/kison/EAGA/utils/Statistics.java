@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 public class Statistics {
-	// Singleton var
+	// Singleton variable
 	private static Statistics INSTANCE = null;
 	private final static Logger logger =  Logger.getLogger(Statistics.class);
 	private Utils utils;

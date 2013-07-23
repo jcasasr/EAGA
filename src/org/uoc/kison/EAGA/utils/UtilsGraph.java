@@ -50,7 +50,6 @@ public class UtilsGraph {
 
             @Override
             public int compare(Integer i, Integer j) {
-                //return Integer.compare(d[i], d[j]);
                 Integer di = d[i];
                 return di.compareTo(d[j]);
             }

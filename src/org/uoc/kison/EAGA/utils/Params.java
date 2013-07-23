@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.util.Properties;
 
 public class Params {
-	// Singleton var
+	// Singleton variable
 	private static Params INSTANCE = null;
 	
 	private final String propertiesFileName = "config.properties";
@@ -37,7 +37,7 @@ public class Params {
 	// PARENT SELECTION MECHANISM
 
 	// VARIATION OPERATORS (MUTATION)
-	private int CHILDREN_NUM; // children's number for each invidual
+	private int CHILDREN_NUM; // children's number for each individual
 	private String MUTATION_METHOD;
 	private String MUTATION_RANDOM_NUMBER;
 

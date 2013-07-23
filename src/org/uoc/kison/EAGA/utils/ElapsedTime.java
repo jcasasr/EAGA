@@ -20,10 +20,6 @@ package org.uoc.kison.EAGA.utils;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- *
- * @author jcasasr
- */
 public class ElapsedTime {
     private long timeIni;
     private long timeElapsed;

@@ -20,10 +20,6 @@ package org.uoc.kison.EAGA.utils;
 
 import org.apache.log4j.Logger;
 
-/**
- *
- * @author jcasasr
- */
 public class Memory {
     
     private static final Logger logger = Logger.getLogger(Memory.class);

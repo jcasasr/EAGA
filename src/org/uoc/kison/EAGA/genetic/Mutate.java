@@ -45,14 +45,14 @@ public class Mutate {
 	    // timer
 		long time_ini = System.currentTimeMillis();
 	    
-	    // pre-alloc amb el nombre maxim de descendents
+	    // pre-alloc using the maximum number of children
 	    ArrayList<Individual> children = new ArrayList<Individual>(params.getPOPULATION_NUM() * params.getCHILDREN_NUM());
 	    Individual candidate = null;
 	    
-	    // generar descendientes a partir de la poblacion actual
+	    // generate descendants from actual population
 	    for (int i=0;i<params.getPOPULATION_NUM();i++) {
 	        for (int j=0;j<params.getCHILDREN_NUM();j++) {
-	            // generar candidato
+	            // generate candidate
 	            if(params.getMUTATION_METHOD().equalsIgnoreCase("random")) {
 	                candidate = mutateIndividual_random(population[i]);
 	            }
@@ -84,7 +84,7 @@ public class Mutate {
 	    // number of mutations for each individual
 	    int num = 0;
 	    if(params.getMUTATION_RANDOM_NUMBER().equalsIgnoreCase("fromOnetoHalf")) {
-	        num = rand.nextInt(Math.round(d.length/2)); //sample(1:round(length(individual)/2), 1);
+	        num = rand.nextInt(Math.round(d.length/2));
 	    }
 	    
 	    // apply 'num' random modificacions

@@ -61,33 +61,33 @@ public class TerminationCondition {
 	        }
 	        
 	        if (iterationHistory.get(iterationHistory.size()-1) >= k) {
-	            /***************************
+	            /**
 	            * THERE IS A VALID SOLUTION
 	            * define the max iterations without change in the best individual
-	            * */
+	            **/
 	            int solutionMaxIterNoChange = Math.max((int)Math.ceil(numberOfIterations * params.getSOLUTION_MAX_ITER_NO_CHANGE()), 2);
 
 	            if(numIterNoChange >= solutionMaxIterNoChange) {
-	                /******************
+	                /**
 	                * STOP THE PROCESS
 	                * last 'solutionMaxIterNoChange' values are equal
-	                */
+	                **/
 	                return false;
 	            } else {
 	                return true;
 	            }
 	        } else {
-	           /***************************
+	           /**
 	            * THERE IS NOT A SOLUTION
 	            * define the max iterations without change in the best individual
-	            */
+	            **/
 	            int noSolutionMaxIterNoChange = Math.max((int)Math.ceil(numberOfIterations * params.getNO_SOLUTION_MAX_ITER_NO_CHANGE()), 2);
 	            
 	            if(numIterNoChange >= noSolutionMaxIterNoChange) {
-	                /************************
+	                /**
 	                * STOP THE PROCESS
 	                * last 'noSolutionMaxIterNoChange' values are equal
-	                */
+	                **/
 	                logger.warn("Process stopped without valid solution!");
 	                
 	                return false;

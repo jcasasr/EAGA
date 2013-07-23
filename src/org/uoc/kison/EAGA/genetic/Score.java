@@ -68,14 +68,6 @@ public class Score {
 	        score = getScore1(individual.getD(), individual.getH(), k, original.getD());
 	    }
 	    
-	    /*
-	    // DEBUG
-	    if(!is.finite(score)) {
-	        show(individual);
-	        getScore1(individual$d, individual$h, k, original$d, debug=TRUE);
-	        stop("*** SCORE IS NOT FINITE!!!");
-	    }*/
-	    
 	    return score;
 	}
 	
@@ -83,15 +75,13 @@ public class Score {
 	* - d: degree sequence
 	* - h: degree histogram
 	* - k: desired k-value
-	* - d0: orginal degree sequence
-	* @return: float [ak, ak+1) where 'ak' is the k-anononymity value of 'd'
+	* - d0: original degree sequence
+	* @return: float [ak, ak+1) where 'ak' is the k-anonymity value of 'd'
 	*/ 
 	private double getScore1(int[] d, int[] h, int k, int[] d0) {
 	    // 1- k-anonymity value
 	    int kActual = utils.getKAnonymityValue(h);
 	    double c1 = params.getEVALFUNC1_P1() * kActual;
-	    
-	    //if(debug) show(paste("C1 (k) = ",c1, sep=""));
 	    
 	    // 2- number of nodes which are [1,k-1]-anonymity
 	    int numNodes = 0;
@@ -100,7 +90,6 @@ public class Score {
 	    int numNodesNK = getNumberNodesNoKAnonymity(h, k);
 	    double numNodesNK_norm = (1 - (numNodesNK / numNodes));
 	    double c2 = params.getEVALFUNC1_P2() * numNodesNK_norm;
-	    //if(debug) show(paste("C2 (numNodesNK) = ",c2," / ",EVALFUNC1_P2, sep=""));
 	    
 	    // 3- distance to original sequence
 	    int sumd = 0;
@@ -110,19 +99,13 @@ public class Score {
 	    for(int i=0;i<d0.length;i++) distance += Math.abs(d0[i] - d[i]);
 	    double distance_norm = (1 - (distance / maxDistance));
 	    double c3 = params.getEVALFUNC1_P3() * distance_norm;
-	    //if(debug) show(paste("C3 (distance) = ",c3," / ",EVALFUNC1_P3, sep=""));
 	    
 	    // 4- distance to nearest neighborhoods
 	    double neigh = getNearestNeighborhoodPuntuation(h, k);
 	    double c4 = params.getEVALFUNC1_P4() * neigh;
-	    //if(debug) show(paste("C4 (neighborhood) = ",c4," / ",EVALFUNC1_P4, sep=""));
 	    
 	    // total
 	    double total = c1 + c2 + c3 + c4;
-	    /*if(debug) {
-	        show(paste("TOTAL =", total));
-	        show("***********************");
-	    }*/
 	    
 	    // return
 	    return total;
@@ -144,7 +127,7 @@ public class Score {
 	/** Get a score based on the isolation of NK nodes
 	* Applies:
 	* punctuation = SUM((1/di)/i) where i are the (1,k-1)-anonymity nodes
-	* ** nomes compta el numero de nodes NK. Potser es podria normalitzar pel nombre total de nodes
+	* ** only counts NK nodes.
 	* -h: degree histogram
 	* -k: desired k-anonymity value
 	* @return: (0,1] score

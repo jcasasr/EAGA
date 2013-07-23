@@ -57,7 +57,7 @@ public class NextGeneration {
 	    int count = (int) Math.floor(populationNum * (1 - params.getSURVIVOR_STEADYSTATE_RANDOM()));
 	    for(int i=0;i<count;i++) nextGeneration[i] = population[i];
 	    
-	    // random % (mantain diversity)
+	    // random % (maintain diversity)
 	    Random rand = new Random();
 	    while (count < populationNum) {
 	        nextGeneration[count] = population[rand.nextInt(population.length)];

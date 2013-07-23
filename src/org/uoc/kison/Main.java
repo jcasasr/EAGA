@@ -54,6 +54,7 @@ public class Main {
 
             logger.info("**************************************************************");
             logger.info("* EAGA - Evolutionary Algorithms for Graph Anonymization     *");
+            logger.info("*                                                            *");
             logger.info("* Jordi Casas-Roma (jcasasr@uoc.edu)                         *");
             logger.info("* Alexandre Dotor Casals (adotorc@uoc.edu)                   *");
             logger.info("* Universitat Oberta de Catalunya (www.uoc.edu)              *");
@@ -92,16 +93,16 @@ public class Main {
         SimpleIntGraph gk = eaga.eaga(graph, k);
         
         UtilsGraph utilsGraph = new UtilsGraph();
-        int k_real = utilsGraph.getKAnonymityValueFromGraph(gk);
+        int real_k = utilsGraph.getKAnonymityValueFromGraph(gk);
         int ei = Math.round(utilsGraph.edgeIntersection(graph, gk) * 100 / graph.getNumEdges());
         
-        if(k_real < k) {
-            logger.error(String.format("ERROR el valor de k obtingut es mes petit que el desitjat! %s < %s", k_real, k));
-            logger.error(String.format("El fitxer de sortida no s'exportara!"));
+        if(real_k < k) {
+            logger.error(String.format("ERROR: Obtained K value is smaller than desired! %s < %s", real_k, k));
+            logger.error(String.format("Output file won't be written!"));
 
         } else {
             // export result to GML
-            outputFileName = fullPath + baseName + "-k=" + k_real + "-EI="+ ei +"." + extension;
+            outputFileName = fullPath + baseName + "-k=" + real_k + "-EI="+ ei +"." + extension;
             logger.info(String.format("Saving anonymized graph to: %s", outputFileName));
             GmlExporter gmlExporter = new GmlExporter();
             gmlExporter.exportToFile(gk, outputFileName);

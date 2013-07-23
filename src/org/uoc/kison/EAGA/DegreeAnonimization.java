@@ -79,7 +79,7 @@ public class DegreeAnonimization {
         //////////////////////////////////////////////////
         // Initialize population //
         //////////////////////////////////////////////////
-        // crear individuo original
+        // create original individual
         Individual original = new Individual();
         original.setD(d0);
         original.setH(utils.getDegreeHistogramFromDegreeSequence(original.getD()));
@@ -125,7 +125,7 @@ public class DegreeAnonimization {
             System.arraycopy(children, 0, sortPopulation, population.length, children.length);
             population = nextGen.sortPopulation(sortPopulation);
 
-            // seleccionar la siguiente generacion
+            // select next generation
             population = nextGen.getNextGeneration(population);
 
             // show best individual
@@ -139,7 +139,6 @@ public class DegreeAnonimization {
         Individual bestCandidate = population[0];
 
         // timer
-
         stats.incrementTime_AnonymizeDegreeSequence(System.currentTimeMillis() - time_ini);
         stats.incrementCalls_AnonymizeDegreeSequence(1);
         stats.showTimeAnonymizeDegreeSequence();

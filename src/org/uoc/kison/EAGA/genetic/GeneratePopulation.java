@@ -23,7 +23,7 @@ import org.uoc.kison.EAGA.objects.Individual;
 public class GeneratePopulation {
 	
 	/** Generate population
-	* -type: method for population genaration: 'equal'
+	* -type: method for population generation: 'equal'
 	* -original: original 
 	* -qtt: quantity
 	*

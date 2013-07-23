@@ -54,7 +54,7 @@ public class EAGA {
         int[] dk = da.AnonymizeDegreeSequence(d, k);
 
         /**
-         * Step 2. modifiy original graph to anonymize it
+         * Step 2. modify original graph to anonymize it
          */ 
         GraphReconstruction gr = new GraphReconstruction(g, dk);
         SimpleIntGraph gk = gr.EAGA_recons();

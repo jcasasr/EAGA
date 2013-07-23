@@ -32,8 +32,8 @@ public class GraphReconstruction {
     private SimpleIntGraph g; // original graph
     private SimpleIntGraph gk; // anonymized graph
     private int[] dk;
-    private ArrayList<Integer> nodo_anadir_arista;
-    private ArrayList<Integer> nodo_quitar_arista;
+    private ArrayList<Integer> addEdgeNodes;
+    private ArrayList<Integer> removeEdgeNodes;
 
     /**
      * 
@@ -59,35 +59,35 @@ public class GraphReconstruction {
         int[] d0 = utilsGraph.degree(g);
 
         // change's vector
-        int[] vector_cambios = new int[dk.length];
-        for (int i = 0; i < vector_cambios.length; i++) {
-            vector_cambios[i] = dk[i] - d0[i];
+        int[] changesVector = new int[dk.length];
+        for (int i = 0; i < changesVector.length; i++) {
+            changesVector[i] = dk[i] - d0[i];
         }
-        logger.debug("EAGA_recons: vector_cambios: " + Arrays.toString(vector_cambios));
+        logger.debug("EAGA_recons: changesVector: " + Arrays.toString(changesVector));
 
-        int len_vector_cambios = vector_cambios.length;
+        int len_changesVector = changesVector.length;
 
         // vectors
-        nodo_quitar_arista = new ArrayList<Integer>(len_vector_cambios);
-        nodo_anadir_arista = new ArrayList<Integer>(len_vector_cambios);
+        removeEdgeNodes = new ArrayList<Integer>(len_changesVector);
+        addEdgeNodes = new ArrayList<Integer>(len_changesVector);
 
-        for (int i = 0; i < len_vector_cambios; i++) {
-            if (vector_cambios[i] < 0) {
-                for (int j = 0; j < Math.abs(vector_cambios[i]); j++) {
-                    nodo_quitar_arista.add(i);
+        for (int i = 0; i < len_changesVector; i++) {
+            if (changesVector[i] < 0) {
+                for (int j = 0; j < Math.abs(changesVector[i]); j++) {
+                    removeEdgeNodes.add(i);
                 }
-            } else if (vector_cambios[i] > 0) {
-                for (int j = 0; j < Math.abs(vector_cambios[i]); j++) {
-                    nodo_anadir_arista.add(i);
+            } else if (changesVector[i] > 0) {
+                for (int j = 0; j < Math.abs(changesVector[i]); j++) {
+                    addEdgeNodes.add(i);
                 }
             }
         }
 
-        nodo_anadir_arista.trimToSize();
-        nodo_quitar_arista.trimToSize();
+        addEdgeNodes.trimToSize();
+        removeEdgeNodes.trimToSize();
 
-        logger.debug(String.format("EAGA_recons: nodo_quitar_arista (%d): %s", nodo_quitar_arista.size(), Arrays.toString(nodo_quitar_arista.toArray())));
-        logger.debug(String.format("EAGA_recons: nodo_anadir_arista (%d): %s", nodo_anadir_arista.size(), Arrays.toString(nodo_anadir_arista.toArray())));
+        logger.debug(String.format("EAGA_recons: addEdgeNodes (%d): %s", removeEdgeNodes.size(), Arrays.toString(removeEdgeNodes.toArray())));
+        logger.debug(String.format("EAGA_recons: removeEdgeNodes (%d): %s", addEdgeNodes.size(), Arrays.toString(addEdgeNodes.toArray())));
 
         // Reconstruct Graph from dk
         gk = reconstructGraph();
@@ -101,14 +101,14 @@ public class GraphReconstruction {
 
     public SimpleIntGraph reconstructGraph() {
         // Step 1
-        // Reduce 'nodo_quitar_arista' if it is larger than 'nodo_anadir_arista'
-        if (nodo_quitar_arista.size() > nodo_anadir_arista.size()) {
+        // Reduce 'removeEdgeNodes' if it is larger than 'addEdgeNodes'
+        if (removeEdgeNodes.size() > addEdgeNodes.size()) {
             deleteEdges();
         }
 
         // Step 2
-        // Reduce 'nodo_anadir_arista' if it is larger than 'nodo_quitar_arista'
-        if (nodo_quitar_arista.size() < nodo_anadir_arista.size()) {
+        // Reduce 'addEdgeNodes' if it is larger than 'removeEdgeNodes'
+        if (removeEdgeNodes.size() < addEdgeNodes.size()) {
             addEdges();
         }
 
@@ -124,10 +124,10 @@ public class GraphReconstruction {
     private void deleteEdges() {
 
         // delete some edges
-        while (nodo_quitar_arista.size() > nodo_anadir_arista.size()) {
-            int node1 = nodo_quitar_arista.get(0);
-            int node2 = nodo_quitar_arista.get(1);
-            nodo_quitar_arista.subList(0, 2).clear();
+        while (removeEdgeNodes.size() > addEdgeNodes.size()) {
+            int node1 = removeEdgeNodes.get(0);
+            int node2 = removeEdgeNodes.get(1);
+            removeEdgeNodes.subList(0, 2).clear();
 
             ArrayList<Integer> node1Neig = gk.getEdges(node1);
             ArrayList<Integer> node2Neig = gk.getEdges(node2);
@@ -187,22 +187,22 @@ public class GraphReconstruction {
 
     private void addEdges() {
         // add some edges        
-        while (nodo_quitar_arista.size() < nodo_anadir_arista.size()) {
+        while (removeEdgeNodes.size() < addEdgeNodes.size()) {
             boolean newEdge = false;
             int i = 0;
 
-            while (i < nodo_anadir_arista.size() && !newEdge) {
+            while (i < addEdgeNodes.size() && !newEdge) {
                 int j = i + 1;
-                while (j < nodo_anadir_arista.size() && !newEdge) {
-                    Integer source = nodo_anadir_arista.get(i);
-                    Integer target = nodo_anadir_arista.get(j);
+                while (j < addEdgeNodes.size() && !newEdge) {
+                    Integer source = addEdgeNodes.get(i);
+                    Integer target = addEdgeNodes.get(j);
 
                     if ((source != target) && (!gk.getEdges(source).contains(target))) {
                         gk.addEdge(source, target);
                         gk.addEdge(target, source);
                         logger.debug(String.format("EAGA_recons: Step 2: adding edge [%d,%d]", source, target));
-                        nodo_anadir_arista.remove(source);
-                        nodo_anadir_arista.remove(target);
+                        addEdgeNodes.remove(source);
+                        addEdgeNodes.remove(target);
 
                         newEdge = true;
                     }
@@ -223,11 +223,11 @@ public class GraphReconstruction {
 
         int numEdges = gk.getNumEdges();
 
-        while (nodo_quitar_arista.size() > 0) {
-            logger.debug("EAGA_recons: nodo_quitar_arista " + nodo_quitar_arista.size());
+        while (removeEdgeNodes.size() > 0) {
+            logger.debug("EAGA_recons: nodo_quitar_arista " + removeEdgeNodes.size());
 
-            int nodeIni = nodo_quitar_arista.get(0);
-            nodo_quitar_arista.remove(0);
+            int nodeIni = removeEdgeNodes.get(0);
+            removeEdgeNodes.remove(0);
 
             // neigbors nodes of 'nodeIni'
             ArrayList<Integer> nodeIniNeig = gk.getEdges(nodeIni);
@@ -236,8 +236,8 @@ public class GraphReconstruction {
             for (int i=0; i<nodeIniNeig.size();i++) {
             	int candidate = nodeIniNeig.get(i);
                 int j = 0;
-                while (j < nodo_anadir_arista.size() && !newEdge) {
-                    Integer nodeEnd = nodo_anadir_arista.get(j);
+                while (j < addEdgeNodes.size() && !newEdge) {
+                    Integer nodeEnd = addEdgeNodes.get(j);
                     
                     if (candidate != nodeEnd && (!gk.getEdges(nodeEnd).contains(candidate))) {
                         logger.debug(String.format("EAGA_recons: Step 3: edge change: (%d,%d) -> (%d,%d) ", nodeIni, candidate, nodeEnd, candidate));
@@ -246,7 +246,7 @@ public class GraphReconstruction {
                         gk.addEdge(nodeEnd, candidate);
                         gk.addEdge(candidate, nodeEnd);
 
-                        nodo_anadir_arista.remove(nodeEnd);
+                        addEdgeNodes.remove(nodeEnd);
 
                         newEdge = true;
 
