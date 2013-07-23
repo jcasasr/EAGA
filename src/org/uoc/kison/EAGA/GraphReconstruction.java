@@ -1,20 +1,20 @@
 /*
  * Copyright 2013 Jordi Casas-Roma, Alexandre Dotor Casals
  * 
- * This file is part of UMGA. 
+ * This file is part of EAGA. 
  * 
- * UMGA is free software: you can redistribute it and/or modify
+ * EAGA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * UMGA is distributed in the hope that it will be useful,
+ * EAGA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with UMGA.  If not, see <http://www.gnu.org/licenses/>.
+ * along with EAGA.  If not, see <http://www.gnu.org/licenses/>.
 */
 package org.uoc.kison.EAGA;
 
@@ -49,9 +49,9 @@ public class GraphReconstruction {
     }
     
     /**
-     * UMGA Step 2. Modification of graph structure in order to apply anonymized degree sequence
+     * EAGA Step 2. Modification of graph structure in order to apply anonymized degree sequence
      */ 
-    public SimpleIntGraph UMGA_recons() {
+    public SimpleIntGraph EAGA_recons() {
         
         logger.info("Starting graph reconstruction...");
         
@@ -63,7 +63,7 @@ public class GraphReconstruction {
         for (int i = 0; i < vector_cambios.length; i++) {
             vector_cambios[i] = dk[i] - d0[i];
         }
-        logger.debug("UMGA_recons: vector_cambios: " + Arrays.toString(vector_cambios));
+        logger.debug("EAGA_recons: vector_cambios: " + Arrays.toString(vector_cambios));
 
         int len_vector_cambios = vector_cambios.length;
 
@@ -86,8 +86,8 @@ public class GraphReconstruction {
         nodo_anadir_arista.trimToSize();
         nodo_quitar_arista.trimToSize();
 
-        logger.debug(String.format("UMGA_recons: nodo_quitar_arista (%d): %s", nodo_quitar_arista.size(), Arrays.toString(nodo_quitar_arista.toArray())));
-        logger.debug(String.format("UMGA_recons: nodo_anadir_arista (%d): %s", nodo_anadir_arista.size(), Arrays.toString(nodo_anadir_arista.toArray())));
+        logger.debug(String.format("EAGA_recons: nodo_quitar_arista (%d): %s", nodo_quitar_arista.size(), Arrays.toString(nodo_quitar_arista.toArray())));
+        logger.debug(String.format("EAGA_recons: nodo_anadir_arista (%d): %s", nodo_anadir_arista.size(), Arrays.toString(nodo_anadir_arista.toArray())));
 
         // Reconstruct Graph from dk
         gk = reconstructGraph();
@@ -112,7 +112,7 @@ public class GraphReconstruction {
             addEdges();
         }
 
-        logger.debug(String.format("UMGA_recons: Step 3: Starting [numEdges=%d]", gk.getNumEdges()));
+        logger.debug(String.format("EAGA_recons: Step 3: Starting [numEdges=%d]", gk.getNumEdges()));
 
         // Step 3
         // Change edges to reduce/increase degree of nodes
@@ -132,7 +132,7 @@ public class GraphReconstruction {
             ArrayList<Integer> node1Neig = gk.getEdges(node1);
             ArrayList<Integer> node2Neig = gk.getEdges(node2);
 
-            logger.debug(String.format("UMGA_recons: Step 1: deleting edges from nodes %d and %d", node1, node2));
+            logger.debug(String.format("EAGA_recons: Step 1: deleting edges from nodes %d and %d", node1, node2));
 
             boolean newEdge = false;
             for (int i=0; i<node1Neig.size(); i++) {
@@ -152,25 +152,25 @@ public class GraphReconstruction {
                         if (!gk.getEdges(a).contains(b)) {
                             logger.debug("Num edges = " + gk.getNumEdges());
                             if (!gk.getEdges(node1).contains(a)) {
-                                logger.error(String.format("UMGA_recons: node [%d,%d] does not exist! It can not be deleted!", node1, a));
+                                logger.error(String.format("EAGA_recons: node [%d,%d] does not exist! It can not be deleted!", node1, a));
                             }
                             gk.deleteEdge(node1, a);
                             gk.deleteEdge(a, node1);
-                            logger.debug(String.format("UMGA_recons: Step 1: deleting edge [%d,%d]", node1, a));
+                            logger.debug(String.format("EAGA_recons: Step 1: deleting edge [%d,%d]", node1, a));
                             logger.debug("Num edges = " + gk.getNumEdges());
 
                             if (!gk.getEdges(node2).contains(b)) {
-                                logger.error(String.format("UMGA_recons: node [%d,%d] does not exist! It can not be deleted!", node2, b));
+                                logger.error(String.format("EAGA_recons: node [%d,%d] does not exist! It can not be deleted!", node2, b));
                             }
                             gk.deleteEdge(node2, b);
                             gk.deleteEdge(b, node2);
-                            logger.debug(String.format("UMGA_recons: Step 1: deleting edge [%d,%d]", node2, b));
+                            logger.debug(String.format("EAGA_recons: Step 1: deleting edge [%d,%d]", node2, b));
                             logger.debug("Num edges = " + gk.getNumEdges());
 
                             gk.addEdge(a, b);
                             gk.addEdge(b, a);
                             newEdge = true;
-                            logger.debug(String.format("UMGA_recons: Step 1: adding edge [%d,%d]", a, b));
+                            logger.debug(String.format("EAGA_recons: Step 1: adding edge [%d,%d]", a, b));
                             logger.debug("Num edges = " + gk.getNumEdges());
                         }
                     }
@@ -179,7 +179,7 @@ public class GraphReconstruction {
 
             if (!newEdge) {
                 // warning, no new edge has been created!
-                logger.error("UMGA_recons: Step 1: NO NEW EDGE HAS BEEN CREATED!");
+                logger.error("EAGA_recons: Step 1: NO NEW EDGE HAS BEEN CREATED!");
                 break;
             }
         }
@@ -200,7 +200,7 @@ public class GraphReconstruction {
                     if ((source != target) && (!gk.getEdges(source).contains(target))) {
                         gk.addEdge(source, target);
                         gk.addEdge(target, source);
-                        logger.debug(String.format("UMGA_recons: Step 2: adding edge [%d,%d]", source, target));
+                        logger.debug(String.format("EAGA_recons: Step 2: adding edge [%d,%d]", source, target));
                         nodo_anadir_arista.remove(source);
                         nodo_anadir_arista.remove(target);
 
@@ -213,7 +213,7 @@ public class GraphReconstruction {
 
             if (!newEdge) {
                 // warning, no new edge has been created!
-                logger.error("UMGA_recons: Step 2: NO NEW EDGE HAS BEEN CREATED!");
+                logger.error("EAGA_recons: Step 2: NO NEW EDGE HAS BEEN CREATED!");
                 break;
             }
         }
@@ -224,7 +224,7 @@ public class GraphReconstruction {
         int numEdges = gk.getNumEdges();
 
         while (nodo_quitar_arista.size() > 0) {
-            logger.debug("UMGA_recons: nodo_quitar_arista " + nodo_quitar_arista.size());
+            logger.debug("EAGA_recons: nodo_quitar_arista " + nodo_quitar_arista.size());
 
             int nodeIni = nodo_quitar_arista.get(0);
             nodo_quitar_arista.remove(0);
@@ -240,7 +240,7 @@ public class GraphReconstruction {
                     Integer nodeEnd = nodo_anadir_arista.get(j);
                     
                     if (candidate != nodeEnd && (!gk.getEdges(nodeEnd).contains(candidate))) {
-                        logger.debug(String.format("UMGA_recons: Step 3: edge change: (%d,%d) -> (%d,%d) ", nodeIni, candidate, nodeEnd, candidate));
+                        logger.debug(String.format("EAGA_recons: Step 3: edge change: (%d,%d) -> (%d,%d) ", nodeIni, candidate, nodeEnd, candidate));
                         gk.deleteEdge(nodeIni, candidate);
                         gk.deleteEdge(candidate, nodeIni);
                         gk.addEdge(nodeEnd, candidate);
@@ -253,7 +253,7 @@ public class GraphReconstruction {
                         // verification of number of edges
                         int numEdgesNow = gk.getNumEdges();
                         if (numEdges != numEdgesNow) {
-                            logger.error(String.format("UMGA_recons: ERROR: number of edges has changed! [%d -> %d]", numEdges, numEdgesNow));
+                            logger.error(String.format("EAGA_recons: ERROR: number of edges has changed! [%d -> %d]", numEdges, numEdgesNow));
                         }
                     }
                     j = j + 1;
@@ -262,7 +262,7 @@ public class GraphReconstruction {
             
             if (!newEdge) {
                 // warning, no new edge has been created!
-                logger.error("UMGA_recons: Step 3: NO VALID EDGE SWITCH HAS BEEN FOUND!");
+                logger.error("EAGA_recons: Step 3: NO VALID EDGE SWITCH HAS BEEN FOUND!");
                 break;
             }
         }

@@ -23,9 +23,9 @@ import org.uoc.kison.EAGA.utils.ElapsedTime;
 import org.uoc.kison.EAGA.utils.UtilsGraph;
 import org.uoc.kison.objects.SimpleIntGraph;
 
-/////////////////////////////////////////////////////////
-// Univariant Microaggregation for Graph Anonymization //
-/////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+// Evolutionary Algorithms for Graph Anonymization  //
+/////////////////////////////////////////////////////
 public class EAGA {
 
     private static final Logger logger = Logger.getLogger(EAGA.class);
@@ -57,7 +57,7 @@ public class EAGA {
          * Step 2. modifiy original graph to anonymize it
          */ 
         GraphReconstruction gr = new GraphReconstruction(g, dk);
-        SimpleIntGraph gk = gr.UMGA_recons();
+        SimpleIntGraph gk = gr.EAGA_recons();
 
         logger.info("Anonimization process has finished!");
         logger.info("************************************************");
