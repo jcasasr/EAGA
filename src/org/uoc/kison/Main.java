@@ -56,7 +56,7 @@ public class Main {
             logger.info("* EAGA - Evolutionary Algorithm for Graph Anonymization     *");
             logger.info("*                                                           *");
             logger.info("* Jordi Casas-Roma (jcasasr@uoc.edu)                        *");
-            logger.info("* Alexandre Dotor Casals (adotorc@uoc.edu)                  *");
+            logger.info("* Alexandre Dotor-Casals (adotorc@uoc.edu)                  *");
             logger.info("* Universitat Oberta de Catalunya (www.uoc.edu)             *");
             logger.info("*************************************************************");
             logger.info("");

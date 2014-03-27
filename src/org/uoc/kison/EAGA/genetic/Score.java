@@ -18,11 +18,9 @@
 */
 package org.uoc.kison.EAGA.genetic;
 
-import java.util.ArrayList;
-
 import org.uoc.kison.EAGA.objects.Individual;
-import org.uoc.kison.EAGA.utils.Statistics;
 import org.uoc.kison.EAGA.utils.Params;
+import org.uoc.kison.EAGA.utils.Statistics;
 import org.uoc.kison.EAGA.utils.Utils;
 import org.uoc.kison.EAGA.utils.UtilsGraph;
 
@@ -94,6 +92,7 @@ public class Score {
             int num = 0;
 	    for(int i=0;i<h.length;i++){
 	    	if (h[i] > 0 && h[i] < k) num += h[i];
+	    	// TODO: is adding h[i] correct? Shouldn't it be num++ (as you count number of nodes)?
 	    }
 	    return num;
 	}

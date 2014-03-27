@@ -50,8 +50,6 @@ public class TerminationCondition {
 	
 	public boolean doIteration(int k) {
 	    if(iterationHistory.size() > 0) {
-	        // number of iterations we did
-	        int numberOfIterations = getNumberOfIterations();
 	        // compute the number of iterations with the same best candidate
 	        numIterNoChange = -1;
 	        for(int i=0;i<iterationHistory.size();i++){

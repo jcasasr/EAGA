@@ -10,3 +10,4 @@ lib/CopyLibs/org-netbeans-modules-java-j2seproject-copylibstask.jar
 lib/nblibraries.properties
 polblogs.sh
 polbooks.sh
+/bin

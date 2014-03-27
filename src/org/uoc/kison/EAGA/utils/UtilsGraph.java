@@ -157,9 +157,10 @@ public class UtilsGraph {
         for(int i=0; i<d.length; i++) {
             v += d[i];
         }
-        // divide by length
+
+        // divide by length        
         v = v / d.length;
         
-        return(v);
+        return v;
     }
 }

@@ -59,8 +59,17 @@ public class Mutate {
 	            }
 	            
                     /**
-                     * @TODO
-                     * It takes 99% of execution time!
+                     * @TODO - It takes 99% of execution time!
+                     * 
+                     * We have 2 ways of handle this more efficiently:
+                     * 	- Using SET instead of ArrayList, as Sets elements are always unique and java does the job
+                     * 		for us (and faster).
+                     * 
+                     *  - Add all the values to the arraylist, including repeats, and then create a SET with it like:
+                     *  	Set set = new HashSet(candidate);
+                     *  
+                     *    This will only add non-repeated candidates and we'll only iterate once not every time we want
+                     *    to add a candidate
                      */
 	            if(!children.contains(candidate)) children.add(candidate);
 	        }
@@ -107,7 +116,8 @@ public class Mutate {
 	    return candidate;
 	}
         
-        private int[] randomModifications(int[] d, int num) {
+        @SuppressWarnings("unused")
+		private int[] randomModifications(int[] d, int num) {
             // apply 'num' random modificacions
             Random rand = new Random();
 	    int n1; 
@@ -130,7 +140,7 @@ public class Mutate {
             double pAddNode = 0.5;
             
             // select nodes to modify
-            List<Integer> candidates = new ArrayList<>();
+            List<Integer> candidates = new ArrayList<Integer>();
             
             for(int i=0; i<d.length; i++) {
                 int degree = d[i];
