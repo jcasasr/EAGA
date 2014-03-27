@@ -20,6 +20,7 @@ package org.uoc.kison.EAGA.genetic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.uoc.kison.EAGA.objects.Individual;
@@ -41,9 +42,9 @@ public class Mutate {
 		utils = new Utils();
 	}
 	
-	public Individual[] mutatePopulation(Individual[] population) {
+	public Individual[] mutatePopulation(Individual[] population, int k) {
 	    // timer
-		long time_ini = System.currentTimeMillis();
+            long time_ini = System.currentTimeMillis();
 	    
 	    // pre-alloc using the maximum number of children
 	    ArrayList<Individual> children = new ArrayList<Individual>(params.getPOPULATION_NUM() * params.getCHILDREN_NUM());
@@ -54,9 +55,13 @@ public class Mutate {
 	        for (int j=0;j<params.getCHILDREN_NUM();j++) {
 	            // generate candidate
 	            if(params.getMUTATION_METHOD().equalsIgnoreCase("random")) {
-	                candidate = mutateIndividual_random(population[i]);
+	                candidate = mutateIndividual_random(population[i], k);
 	            }
 	            
+                    /**
+                     * @TODO
+                     * It takes 99% of execution time!
+                     */
 	            if(!children.contains(candidate)) children.add(candidate);
 	        }
 	    }
@@ -77,9 +82,10 @@ public class Mutate {
 	* -individual: individual
 	* @return: mutated individual
 	*/
-	private Individual mutateIndividual_random(Individual individual) {	    
-		int[] d = Arrays.copyOf(individual.getD(),individual.getD().length);
-	    Random rand = new Random();
+	private Individual mutateIndividual_random(Individual individual, int k) {
+            Random rand = new Random();
+            // copy "d" array
+            int[] d = Arrays.copyOf(individual.getD(), individual.getD().length);
 	    
 	    // number of mutations for each individual
 	    int num = 0;
@@ -88,15 +94,8 @@ public class Mutate {
 	    }
 	    
 	    // apply 'num' random modificacions
-	    int n1; int n2;
-	    for(int i=0;i<num;i++) {
-	        n1 = rand.nextInt(d.length);
-	        if (!(d[n1] == 0)){
-	        	d[n1] = d[n1]-1;
-	        	n2 = rand.nextInt(d.length);
-		        d[n2] = d[n2]+1;
-	        }	        
-	    }
+	    //d = randomModifications(d, num);
+            d = otherModifications(d, individual.getH(), k, num);
 	    
 	    // new candidate
 	    Individual candidate = new Individual();
@@ -107,4 +106,64 @@ public class Mutate {
 	    
 	    return candidate;
 	}
+        
+        private int[] randomModifications(int[] d, int num) {
+            // apply 'num' random modificacions
+            Random rand = new Random();
+	    int n1; 
+            int n2;
+            
+	    for(int i=0; i<num; i++) {
+	        n1 = rand.nextInt(d.length);
+	        if (!(d[n1] == 0)){
+                    d[n1] = d[n1]-1;
+                    n2 = rand.nextInt(d.length);
+                    d[n2] = d[n2]+1;
+	        }	        
+	    }
+            
+            return d;
+        }
+        
+        private int[] otherModifications(int[] d, int[] h, int k, int num) {
+            Random rand = new Random();
+            double pAddNode = 0.5;
+            
+            // select nodes to modify
+            List<Integer> candidates = new ArrayList<>();
+            
+            for(int i=0; i<d.length; i++) {
+                int degree = d[i];
+                int freq = h[degree];
+                
+                if(freq < k) {
+                    // it does not satisfy the k-anonymity
+                    candidates.add(i);
+                } else {
+                    // it does
+                    if(rand.nextDouble() > (1-pAddNode)) {
+                        candidates.add(i);
+                    }
+                }
+            }
+            
+            // apply 'num' random modificacions
+	    for(int i=0; i<num; i++) {
+	        int n1 = candidates.get(rand.nextInt(candidates.size()));
+                if (!(d[n1] == 0)){
+                    // number of degrees
+                    int deg = rand.nextInt(d[n1]);
+                    int n2 = candidates.get(rand.nextInt(candidates.size()));
+                    
+                    if(d[n1]-deg <= 0) {
+                        deg = d[n1]-1;
+                    }
+                    
+                    d[n1] = d[n1] - deg;
+                    d[n2] = d[n2] + deg;
+	        }	        
+	    }
+            
+            return d;
+        }
 }

@@ -54,5 +54,4 @@ public class Individual implements Comparable<Individual>{
 		else if (this.score < object.score) return 1;
 		else return 0;
 	}
-	
 }

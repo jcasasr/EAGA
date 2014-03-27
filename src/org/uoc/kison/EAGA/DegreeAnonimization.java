@@ -110,7 +110,7 @@ public class DegreeAnonimization {
             ////////////////////////////////////////////////
             // 2- mutate population //
             ////////////////////////////////////////////////
-            children = mutate.mutatePopulation(population);
+            children = mutate.mutatePopulation(population, k);
 
             ////////////////////////////////////////////////////
             // 3- Evaluate population //

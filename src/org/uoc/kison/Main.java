@@ -52,13 +52,13 @@ public class Main {
             extension = FilenameUtils.getExtension(inputFileName);
             
 
-            logger.info("**************************************************************");
-            logger.info("* EAGA - Evolutionary Algorithms for Graph Anonymization     *");
-            logger.info("*                                                            *");
-            logger.info("* Jordi Casas-Roma (jcasasr@uoc.edu)                         *");
-            logger.info("* Alexandre Dotor Casals (adotorc@uoc.edu)                   *");
-            logger.info("* Universitat Oberta de Catalunya (www.uoc.edu)              *");
-            logger.info("**************************************************************");
+            logger.info("*************************************************************");
+            logger.info("* EAGA - Evolutionary Algorithm for Graph Anonymization     *");
+            logger.info("*                                                           *");
+            logger.info("* Jordi Casas-Roma (jcasasr@uoc.edu)                        *");
+            logger.info("* Alexandre Dotor Casals (adotorc@uoc.edu)                  *");
+            logger.info("* Universitat Oberta de Catalunya (www.uoc.edu)             *");
+            logger.info("*************************************************************");
             logger.info("");
             logger.info(String.format("Version %s", version));
             logger.info(String.format("Input filname   : %s", inputFileName));

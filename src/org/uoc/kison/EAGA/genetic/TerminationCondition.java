@@ -60,12 +60,12 @@ public class TerminationCondition {
 	        	}
 	        }
 	        
-	        if (iterationHistory.get(iterationHistory.size()-1) >= k) {
+	        if (iterationHistory.get(iterationHistory.size()-1) >= 1) { // K enlloc de 1
 	            /**
 	            * THERE IS A VALID SOLUTION
 	            * define the max iterations without change in the best individual
 	            **/
-	            int solutionMaxIterNoChange = Math.max((int)Math.ceil(numberOfIterations * params.getSOLUTION_MAX_ITER_NO_CHANGE()), 2);
+	            int solutionMaxIterNoChange = params.getSOLUTION_MAX_ITER_NO_CHANGE();
 
 	            if(numIterNoChange >= solutionMaxIterNoChange) {
 	                /**
@@ -81,7 +81,7 @@ public class TerminationCondition {
 	            * THERE IS NOT A SOLUTION
 	            * define the max iterations without change in the best individual
 	            **/
-	            int noSolutionMaxIterNoChange = Math.max((int)Math.ceil(numberOfIterations * params.getNO_SOLUTION_MAX_ITER_NO_CHANGE()), 2);
+	            int noSolutionMaxIterNoChange = params.getNO_SOLUTION_MAX_ITER_NO_CHANGE();
 	            
 	            if(numIterNoChange >= noSolutionMaxIterNoChange) {
 	                /**

@@ -24,6 +24,7 @@ import org.uoc.kison.EAGA.objects.Individual;
 import org.uoc.kison.EAGA.utils.Statistics;
 import org.uoc.kison.EAGA.utils.Params;
 import org.uoc.kison.EAGA.utils.Utils;
+import org.uoc.kison.EAGA.utils.UtilsGraph;
 
 /*************
 * EAGA_score *
@@ -32,11 +33,13 @@ import org.uoc.kison.EAGA.utils.Utils;
 */
 public class Score {
 	private Utils utils;
+        private UtilsGraph utilsGraph;
 	private Params params;
 	private Statistics stats;
 	
 	public Score(){
 		utils = new Utils();
+                utilsGraph = new UtilsGraph();
 		params = Params.getInstance();
 		stats = Statistics.getInstance();
 	}
@@ -46,7 +49,7 @@ public class Score {
 		// timer
 	    long time_ini = System.currentTimeMillis();
 	    
-	    // evaluate all population
+	    // evaluate all population            
 	    for(int i=0;i<population.length;i++) {
 	        population[i].setK(utils.getKAnonymityValue(population[i].getH()));
 	        population[i].setScore(evaluateIndividual(population[i], original, k));
@@ -61,117 +64,122 @@ public class Score {
 	
 	// evaluate individual
 	private double evaluateIndividual(Individual individual, Individual original, int k) {
-		double score = -1;
-		// get puntuation
+            double score = -1;
+            // get puntuation
 	    if(params.getEVALUATION_FUNCTION() == 1) {
 	        // Evaluation function #1
-	        score = getScore1(individual.getD(), individual.getH(), k, original.getD());
+	        score = getScore(individual.getD(), individual.getH(), k, original.getD());
 	    }
 	    
 	    return score;
 	}
 	
-	/** Get individual's score
-	* - d: degree sequence
-	* - h: degree histogram
-	* - k: desired k-value
-	* - d0: original degree sequence
-	* @return: float [ak, ak+1) where 'ak' is the k-anonymity value of 'd'
-	*/ 
-	private double getScore1(int[] d, int[] h, int k, int[] d0) {
-	    // 1- k-anonymity value
-	    int kActual = utils.getKAnonymityValue(h);
-	    double c1 = params.getEVALFUNC1_P1() * kActual;
-	    
-	    // 2- number of nodes which are [1,k-1]-anonymity
-	    int numNodes = 0;
-	    for(int i=0;i<h.length;i++) numNodes += h[i];
-	    
-	    int numNodesNK = getNumberNodesNoKAnonymity(h, k);
-	    double numNodesNK_norm = (1 - (numNodesNK / numNodes));
-	    double c2 = params.getEVALFUNC1_P2() * numNodesNK_norm;
-	    
-	    // 3- distance to original sequence
-	    int sumd = 0;
-	    for(int i=0;i<d.length;i++) sumd += d[i];
-	    int maxDistance = sumd * 2;
-	    int distance = 0;
-	    for(int i=0;i<d0.length;i++) distance += Math.abs(d0[i] - d[i]);
-	    double distance_norm = (1 - (distance / maxDistance));
-	    double c3 = params.getEVALFUNC1_P3() * distance_norm;
-	    
-	    // 4- distance to nearest neighborhoods
-	    double neigh = getNearestNeighborhoodPuntuation(h, k);
-	    double c4 = params.getEVALFUNC1_P4() * neigh;
-	    
-	    // total
-	    double total = c1 + c2 + c3 + c4;
-	    
-	    // return
-	    return total;
-	}
-	
+        // get number of nodes with k-anoninymity value betweenn 1,k-1
+        private double getNoKAnonymity(int[] d, int[] h, int k) {
+            int numNodes = d.length;
+            // compute the number of nodes which k < desired k
+            int numNodesNK = getNumberNodesNoKAnonymity(h, k);
+            // compute the normalized value
+            double numNodesNK_norm = (1 - (numNodesNK / numNodes));
+            
+            return numNodesNK_norm;
+        }
+        
 	/** Get number of nodes which don't agree k-anonymity
 	* -h: degree histogram
 	* -k: desired k-anonymity value
 	* @return: integer [0, +Inf)
 	*/ 
 	private int getNumberNodesNoKAnonymity(int[] h, int k) {
-		int num = 0;
+            int num = 0;
 	    for(int i=0;i<h.length;i++){
 	    	if (h[i] > 0 && h[i] < k) num += h[i];
 	    }
 	    return num;
 	}
 
-	/** Get a score based on the isolation of NK nodes
-	* Applies:
-	* punctuation = SUM((1/di)/i) where i are the (1,k-1)-anonymity nodes
-	* ** only counts NK nodes.
-	* -h: degree histogram
-	* -k: desired k-anonymity value
+        /** Get individual's score
+	* - d: degree sequence
+	* - h: degree histogram
+	* - k: desired k-value
+	* - d0: original degree sequence
+	* @return: float [ak, ak+1) where 'ak' is the k-anonymity value of 'd'
+	*/ 
+	private double getScore(int[] d, int[] h, int k, int[] d0) {
+            double c1=0, c2=0, c3=0, c4=0;
+            
+	    // 1- k-anonymity value
+	    int kActual = utils.getKAnonymityValue(h);
+            
+            if(kActual < k) {
+                /**
+                 * k < desired k
+                 */
+                // 2- number of nodes which are [1,k-1]-anonymity
+                double numNodesNK_norm = getNoKAnonymity(d, h, k);
+                c2 = params.getEVALFUNC1_P2() * numNodesNK_norm;
+
+                // 4- grouping function
+                //double dispersion = getDispersionScore(d);
+                double dispersion = getDispersionScore(d, h, k);
+                c4 = params.getEVALFUNC1_P4() * dispersion;
+            } else {
+                /**
+                 * k >= desired k
+                 * Only the distance to the original sequence is relevant
+                 */
+                // 1- k-anonymity value
+                c1 = params.getEVALFUNC1_P1();
+                
+                // 3- distance to original sequence
+                double distance = getDistanceFromOriginalSequence(d0, d);
+                c3 = params.getEVALFUNC1_P3() * distance;
+            }
+            
+	    // total
+	    double total = c1 + c2 + c3 + c4;
+	    
+	    // return
+	    return total;
+	}
+        
+        private double getDistanceFromOriginalSequence(int[] d0, int[] d) {
+            int sumd = 0;
+            int distance = 0;
+            
+            for(int i=0; i<d0.length; i++) {
+                distance += Math.abs(d0[i] - d[i]);
+                sumd += d[i];
+            }
+            
+            int maxDistance = sumd * 2;
+            double distance_norm = 1 - ((double) distance / (double) maxDistance);
+            
+            return distance_norm;
+        }
+        
+        /** Get a score based on dispersion
+	* @param d: degree sequence
 	* @return: (0,1] score
 	*/
-	private double getNearestNeighborhoodPuntuation(int[] h, int k) {
-	    ArrayList<Integer> nodesNK = new ArrayList<Integer>();
-		for (int i=0;i<h.length;i++) if (h[i]>0 && h[i]<k) nodesNK.add(i);
-	    
-		double punctuation = 0;
-	    double distance;
-	    for (int i=0;i<nodesNK.size();i++) {
-	        distance = getDistanceToNearestNeigborhood(h, nodesNK.get(i));
-	        punctuation += (1/distance);
-	    }
-	    
-	    // normalize value (0, 1]
-	    if(nodesNK.size() > 0) {
-	        punctuation = punctuation / nodesNK.size();
-	    }
+	private double getDispersionScore(int[] d, int[] h, int k) {
+            // select the mean
+            double mean = utilsGraph.getAverageDegree(d);
 
-	    return punctuation;
-	}
+            // compute deviation from the mean
+            double deviation = 0;
+            for(int i=0; i<h.length; i++) {
+                if(h[i] < k) {
+                    // we only consider nodes of 0<k<desired k
+                    int value = i;
+                    int qtt = h[i];
+                    deviation += Math.abs(mean - value) * qtt;
+                }
+            }
+            
+            // compute deviation^(-0.5)
+            double punctuation = Math.pow(deviation, -0.5);
 
-	// Get a score based on the isolation of 1 node
-	private double getDistanceToNearestNeigborhood(int[] h, int index) {
-	    int distance = -1;
-	    int i = 1;
-	    int iMin = 0;
-	    int iMax = h.length;
-	    
-	    while(distance < 0) {
-	        if(index-i >= iMin) {
-	            if(h[index-i]>0) {
-	                distance = i;
-	            }
-	        } 
-	        if(index+i < iMax) {
-	            if(h[index+i]>0) {
-	                distance = i;
-	            }
-	        }
-	        i++;
-	    }
-
-	    return distance;
+	    return(punctuation);
 	}
 }

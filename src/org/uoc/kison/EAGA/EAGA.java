@@ -37,6 +37,9 @@ public class EAGA {
 
     /**
      * EAGA Algorithm
+     * @param g graph
+     * @param k k-anonymity value
+     * @return SimpleIntGraph
      */ 
     public SimpleIntGraph eaga(SimpleIntGraph g, int k) {
 
@@ -52,7 +55,7 @@ public class EAGA {
          */
         DegreeAnonimization da = new DegreeAnonimization();
         int[] dk = da.AnonymizeDegreeSequence(d, k);
-
+        
         /**
          * Step 2. modify original graph to anonymize it
          */ 

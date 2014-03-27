@@ -40,7 +40,7 @@ public class UtilsGraph {
 
         return degrees;
     }
-
+    
     public int[] orderPermutation(final int[] d) {
         List<Integer> indices = new ArrayList<Integer>(d.length);
         for (int i = 0; i < d.length; i++) {
@@ -149,5 +149,17 @@ public class UtilsGraph {
         }
 
         return clone;
+    }
+    
+    public double getAverageDegree(int[] d) {
+        double v = 0;
+        // sum all elements
+        for(int i=0; i<d.length; i++) {
+            v += d[i];
+        }
+        // divide by length
+        v = v / d.length;
+        
+        return(v);
     }
 }

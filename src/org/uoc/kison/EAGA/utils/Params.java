@@ -53,8 +53,8 @@ public class Params {
 	private double SURVIVOR_STEADYSTATE_RANDOM;
 
 	// TERMINATION CONDITION
-	private double SOLUTION_MAX_ITER_NO_CHANGE; // number of iterations' %
-	private double NO_SOLUTION_MAX_ITER_NO_CHANGE; // number of iterations' %
+	private int SOLUTION_MAX_ITER_NO_CHANGE; // number of iterations' %
+	private int NO_SOLUTION_MAX_ITER_NO_CHANGE; // number of iterations' %
 	
 	
 	/** Begin Singleton pattern */
@@ -91,8 +91,8 @@ public class Params {
 			EVALFUNC1_P4 = Double.parseDouble(prop.getProperty("EVALFUNC1_P4"));
 			SURVIVOR_METHOD = prop.getProperty("SURVIVOR_METHOD");
 			SURVIVOR_STEADYSTATE_RANDOM = Double.parseDouble(prop.getProperty("SURVIVOR_STEADYSTATE_RANDOM"));
-			SOLUTION_MAX_ITER_NO_CHANGE = Double.parseDouble(prop.getProperty("SOLUTION_MAX_ITER_NO_CHANGE"));
-			NO_SOLUTION_MAX_ITER_NO_CHANGE = Double.parseDouble(prop.getProperty("NO_SOLUTION_MAX_ITER_NO_CHANGE"));
+			SOLUTION_MAX_ITER_NO_CHANGE = Integer.parseInt(prop.getProperty("SOLUTION_MAX_ITER_NO_CHANGE"));
+			NO_SOLUTION_MAX_ITER_NO_CHANGE = Integer.parseInt(prop.getProperty("NO_SOLUTION_MAX_ITER_NO_CHANGE"));
 
 		} catch (FileNotFoundException ex) {
 			loadDefaultValues();
@@ -120,8 +120,8 @@ public class Params {
 		EVALFUNC1_P4 = 0.15;
 		SURVIVOR_METHOD = "steadyState";
 		SURVIVOR_STEADYSTATE_RANDOM = 0.7;
-		SOLUTION_MAX_ITER_NO_CHANGE = 0.1;
-		NO_SOLUTION_MAX_ITER_NO_CHANGE = 0.5;
+		SOLUTION_MAX_ITER_NO_CHANGE = 10;
+		NO_SOLUTION_MAX_ITER_NO_CHANGE = 50;
 		
 		prop.setProperty("POPULATION_GENERATION_TYPE", POPULATION_GENERATION_TYPE);
 		prop.setProperty("POPULATION_NUM", Integer.toString(POPULATION_NUM));
@@ -238,21 +238,21 @@ public class Params {
 		SURVIVOR_STEADYSTATE_RANDOM = sURVIVOR_STEADYSTATE_RANDOM;
 	}
 
-	public double getSOLUTION_MAX_ITER_NO_CHANGE() {
+	public int getSOLUTION_MAX_ITER_NO_CHANGE() {
 		return SOLUTION_MAX_ITER_NO_CHANGE;
 	}
 
 	public void setSOLUTION_MAX_ITER_NO_CHANGE(
-			double sOLUTION_MAX_ITER_NO_CHANGE) {
+			int sOLUTION_MAX_ITER_NO_CHANGE) {
 		SOLUTION_MAX_ITER_NO_CHANGE = sOLUTION_MAX_ITER_NO_CHANGE;
 	}
 
-	public double getNO_SOLUTION_MAX_ITER_NO_CHANGE() {
+	public int getNO_SOLUTION_MAX_ITER_NO_CHANGE() {
 		return NO_SOLUTION_MAX_ITER_NO_CHANGE;
 	}
 
 	public void setNO_SOLUTION_MAX_ITER_NO_CHANGE(
-			double nO_SOLUTION_MAX_ITER_NO_CHANGE) {
+			int nO_SOLUTION_MAX_ITER_NO_CHANGE) {
 		NO_SOLUTION_MAX_ITER_NO_CHANGE = nO_SOLUTION_MAX_ITER_NO_CHANGE;
 	}
 	
