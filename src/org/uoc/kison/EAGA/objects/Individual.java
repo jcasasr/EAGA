@@ -18,6 +18,8 @@
 */
 package org.uoc.kison.EAGA.objects;
 
+import java.util.Arrays;
+
 public class Individual implements Comparable<Individual>{
 	private int[] d;
 	private int[] h;
@@ -53,5 +55,24 @@ public class Individual implements Comparable<Individual>{
 		if (this.score > object.score) return -1;
 		else if (this.score < object.score) return 1;
 		else return 0;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		
+		Individual eq = (Individual) obj;
+		if (d.length != eq.d.length) return false;	
+
+		for(int i=0;i<d.length;i++){
+			if (this.d[i] != eq.d[i]) return false;
+		}
+
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(d);
 	}
 }

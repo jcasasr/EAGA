@@ -89,10 +89,9 @@ public class Score {
 	* @return: integer [0, +Inf)
 	*/ 
 	private int getNumberNodesNoKAnonymity(int[] h, int k) {
-            int num = 0;
+		int num = 0;
 	    for(int i=0;i<h.length;i++){
 	    	if (h[i] > 0 && h[i] < k) num += h[i];
-	    	// TODO: is adding h[i] correct? Shouldn't it be num++ (as you count number of nodes)?
 	    }
 	    return num;
 	}

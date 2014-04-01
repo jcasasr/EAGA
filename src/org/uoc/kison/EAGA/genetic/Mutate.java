@@ -20,12 +20,14 @@ package org.uoc.kison.EAGA.genetic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.uoc.kison.EAGA.objects.Individual;
-import org.uoc.kison.EAGA.utils.Statistics;
 import org.uoc.kison.EAGA.utils.Params;
+import org.uoc.kison.EAGA.utils.Statistics;
 import org.uoc.kison.EAGA.utils.Utils;
 
 public class Mutate {
@@ -44,10 +46,10 @@ public class Mutate {
 	
 	public Individual[] mutatePopulation(Individual[] population, int k) {
 	    // timer
-            long time_ini = System.currentTimeMillis();
+        long time_ini = System.currentTimeMillis();
 	    
 	    // pre-alloc using the maximum number of children
-	    ArrayList<Individual> children = new ArrayList<Individual>(params.getPOPULATION_NUM() * params.getCHILDREN_NUM());
+        Set<Individual> children = new HashSet<Individual>(params.getPOPULATION_NUM() * params.getCHILDREN_NUM());
 	    Individual candidate = null;
 	    
 	    // generate descendants from actual population
@@ -58,27 +60,17 @@ public class Mutate {
 	                candidate = mutateIndividual_random(population[i], k);
 	            }
 	            
-                    /**
-                     * @TODO - It takes 99% of execution time!
-                     * 
-                     * We have 2 ways of handle this more efficiently:
-                     * 	- Using SET instead of ArrayList, as Sets elements are always unique and java does the job
-                     * 		for us (and faster).
-                     * 
-                     *  - Add all the values to the arraylist, including repeats, and then create a SET with it like:
-                     *  	Set set = new HashSet(candidate);
-                     *  
-                     *    This will only add non-repeated candidates and we'll only iterate once not every time we want
-                     *    to add a candidate
-                     */
-	            if(!children.contains(candidate)) children.add(candidate);
+	           children.add(candidate);
 	        }
 	    }
 	    
-	    // trim size and convert to array (faster to operate with)
-	    children.trimToSize();
 	    Individual[] childrenVector = new Individual[children.size()];
-	    for(int i=0;i<children.size();i++) childrenVector[i] = children.get(i);
+	    int i=0;
+	    for(Individual child : children){
+	    	childrenVector[i] = child;
+	    	i++;
+	    }
+	    children.clear();
 	    
 	    // timer
 	    stats.incrementTime_mutar(System.currentTimeMillis() - time_ini);
@@ -92,9 +84,9 @@ public class Mutate {
 	* @return: mutated individual
 	*/
 	private Individual mutateIndividual_random(Individual individual, int k) {
-            Random rand = new Random();
-            // copy "d" array
-            int[] d = Arrays.copyOf(individual.getD(), individual.getD().length);
+        Random rand = new Random();
+        // copy "d" array
+        int[] d = Arrays.copyOf(individual.getD(), individual.getD().length);
 	    
 	    // number of mutations for each individual
 	    int num = 0;
@@ -104,7 +96,7 @@ public class Mutate {
 	    
 	    // apply 'num' random modificacions
 	    //d = randomModifications(d, num);
-            d = otherModifications(d, individual.getH(), k, num);
+        d = otherModifications(d, individual.getH(), k, num);
 	    
 	    // new candidate
 	    Individual candidate = new Individual();
