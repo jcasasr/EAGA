@@ -69,6 +69,8 @@ public class Main {
         } else {
             System.out.println("EAGA Version " + version);
             System.out.println("Usage: java EAGA <input filename> <k value>");
+            System.out.println("   <input filename>: GML, TXT");
+            System.out.println("   <k value>: k-degree anonymity value");
             System.exit(-1);
         }
 
